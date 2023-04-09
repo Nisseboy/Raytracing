@@ -7,6 +7,8 @@ const rotSpeed = 2;
 
 const boxSize = 45;
 
+let sizeDivisions = 1;
+
 let types = ["sphere", "tri", "quad"];
 
 const obs = [
@@ -191,7 +193,7 @@ const raytracingMat = await new Material("raytracing", {
   cameraRot: { value: new THREE.Vector2(0, 0) },
 
   fov: {value: 90.0},
-  bounceLimit: {value: 5},
+  bounceLimit: {value: 7},
   raysPerPixel: {value: 10},
 
   divergeStrength: {value: 1},
@@ -370,15 +372,18 @@ function keyreleased(e) {
 
 //Event for when screen is resized
 function resize() {
-  uniforms.resolution.value.x = window.innerWidth;
-  uniforms.resolution.value.y = window.innerHeight;
+  let w = window.innerWidth / sizeDivisions;
+  let h = window.innerHeight / sizeDivisions;
 
-  camera.aspect = window.innerWidth / window.innerHeight;
+  uniforms.resolution.value.x = w;
+  uniforms.resolution.value.y = h;
+
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(w, h);
 
-  rt1.setSize(window.innerWidth, window.innerHeight);
-  rt2.setSize(window.innerWidth, window.innerHeight);
+  rt1.setSize(w, h);
+  rt2.setSize(w, h);
 
   uniforms.lastFrame.value = null;
   uniforms.renderedFrames.value = 0;
@@ -699,6 +704,10 @@ controlsElem.appendChild(createControlRange("Bounce Limit", uniforms.bounceLimit
 }));
 controlsElem.appendChild(createControlRange("Rays/Pixel", uniforms.raysPerPixel.value, 1, 100, true, (value)=>{
   uniforms.raysPerPixel.value = value;
+}));
+controlsElem.appendChild(createControlRange("Size Divs", sizeDivisions, 1, 10, true, (value)=>{
+  sizeDivisions = value;
+  resize();
 }));
 
 

@@ -1,5 +1,5 @@
-(async function(){
-
+import * as THREE from 'three';
+import Material from './material';
 
 let pressed = {};
 const moveSpeed = 1;
@@ -768,6 +768,3 @@ matMenu = matMenu[1];
 for (let i = 0; i < mats.length; i++) {
   matMenu.appendChild(createControlMat(i));
 }
-
-
-})();

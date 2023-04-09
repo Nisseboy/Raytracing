@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 
 class Material {
   constructor(shaderName, uniforms) {
@@ -28,3 +29,5 @@ function loadFile(filePath) {
       });
   });
 }
+
+export default Material;

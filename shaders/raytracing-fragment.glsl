@@ -98,7 +98,7 @@ vec2 randPointInCircle() {
 }
 
 
-vec3 rotate(vec3 vector, float pitch, float yaw) {
+vec3 rotate(vec3 vector, float pitch, float yaw, float roll) {
   mat3 rotMatrixX = mat3(
     vec3(cos(yaw), 0.0, sin(yaw)),
     vec3(0.0, 1.0, 0.0),
@@ -109,8 +109,14 @@ vec3 rotate(vec3 vector, float pitch, float yaw) {
     vec3(0.0, cos(pitch), -sin(pitch)),
     vec3(0.0, sin(pitch), cos(pitch))
   );
+  mat3 rotMatrixZ = mat3(
+    vec3(cos(roll), -sin(roll), 0.0),
+    vec3(sin(roll), cos(roll), 0.0),
+    vec3(0.0, 0.0, 1.0)
+  );
+  
 
-  return vector * rotMatrixY * rotMatrixX;
+  return vector * rotMatrixZ * rotMatrixY * rotMatrixX;
 }
 
 
@@ -170,12 +176,12 @@ HitResult rayTri(Ob tri, Ray ray) {
 HitResult rayQuad(Ob quad, Ray ray) {
   vec3 pos = quad.pos;
   vec2 dims = quad.dims.xy;
-  vec2 rot = radians(quad.dims2.xy);
+  vec3 rot = radians(quad.dims2);
 
-  vec3 tl = pos + rotate(vec3(-dims.x, dims.y, 0.0) / 2.0, rot.y, rot.x);
-  vec3 tr = pos + rotate(vec3(dims.x, dims.y, 0.0) / 2.0, rot.y, rot.x);
-  vec3 br = pos + rotate(vec3(dims.x, -dims.y, 0.0) / 2.0, rot.y, rot.x);
-  vec3 bl = pos + rotate(vec3(-dims.x, -dims.y, 0.0) / 2.0, rot.y, rot.x);
+  vec3 tl = pos + rotate(vec3(-dims.x, dims.y, 0.0) / 2.0, rot.y, rot.x, rot.z);
+  vec3 tr = pos + rotate(vec3(dims.x, dims.y, 0.0) / 2.0, rot.y, rot.x, rot.z);
+  vec3 br = pos + rotate(vec3(dims.x, -dims.y, 0.0) / 2.0, rot.y, rot.x, rot.z);
+  vec3 bl = pos + rotate(vec3(-dims.x, -dims.y, 0.0) / 2.0, rot.y, rot.x, rot.z);
 
   Ob tri1;
   tri1.pos = tl;
@@ -281,9 +287,9 @@ void main() {
   randState += uint(time * 719393.0);
 
 
-  vec3 camForward = normalize(rotate(vec3(0.0, 0.0, 1.0), radians(cameraRot.y), radians(cameraRot.x)));
-  vec3 camRight = normalize(rotate(vec3(1.0, 0.0, 0.0), radians(cameraRot.y), radians(cameraRot.x)));
-  vec3 camUp = normalize(rotate(vec3(0.0, 1.0, 0.0), radians(cameraRot.y), radians(cameraRot.x)));
+  vec3 camForward = normalize(rotate(vec3(0.0, 0.0, 1.0), radians(cameraRot.y), radians(cameraRot.x), 0.0));
+  vec3 camRight = normalize(rotate(vec3(1.0, 0.0, 0.0), radians(cameraRot.y), radians(cameraRot.x), 0.0));
+  vec3 camUp = normalize(rotate(vec3(0.0, 1.0, 0.0), radians(cameraRot.y), radians(cameraRot.x), 0.0));
 
 
   vec2 uv = gl_FragCoord.xy / resolution;

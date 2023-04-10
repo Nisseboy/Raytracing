@@ -619,9 +619,8 @@ function createControlObject(index) {
     });
     menu.appendChild(dimsElem);
 
-    let rotElem = createControlVector("Rotation", new THREE.Vector2(ob.dims2.x, ob.dims2.y), 360, true, (val) => {
-      ob.dims2.x = val.x;
-      ob.dims2.y = val.y;
+    let rotElem = createControlVector("Rotation", ob.dims2, 360, true, (val) => {
+
     });
     menu.appendChild(rotElem);
 

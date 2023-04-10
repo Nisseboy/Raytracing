@@ -118,77 +118,88 @@ const mats = [
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 0,
-    specProb: 0
+    specProb: 0,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Front wall
     color: new THREE.Vector3(252, 217, 220),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 0,
-    specProb: 0
+    specProb: 0,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Left wall
     color: new THREE.Vector3(255, 0, 0),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 0,
-    specProb: 0
+    specProb: 0,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Right wall
     color: new THREE.Vector3(0, 255, 0),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 0,
-    specProb: 0
+    specProb: 0,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Bottom wall
     color: new THREE.Vector3(255, 255, 255),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 1,
-    specProb: 0.1
+    specProb: 0.1,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Top wall
     color: new THREE.Vector3(46, 52, 57),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 0,
-    specProb: 0
+    specProb: 0,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Lamp
     color: new THREE.Vector3(0, 0, 0),
     emissionColor: new THREE.Vector3(255, 255, 255),
     emissionStrength: 10,
     smoothness: 0,
-    specProb: 0
+    specProb: 0,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Sphere 1
     color: new THREE.Vector3(200, 200, 200),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 1,
-    specProb: 0.5
+    specProb: 0.5,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Sphere 1
     color: new THREE.Vector3(200, 200, 200),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 1,
-    specProb: 1
+    specProb: 1,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Sphere 1
     color: new THREE.Vector3(200, 200, 200),
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 1,
-    specProb: 0.02
+    specProb: 0.02,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
   {
     color: new THREE.Vector3(0, 200, 200),
     emissionColor: new THREE.Vector3(0, 200, 200),
     emissionStrength: 10,
     smoothness: 0.5,
-    specProb: 0.02
+    specProb: 0.02,
+    specularColor: new THREE.Vector3(255, 255, 255),
   },
 ];
 
@@ -736,6 +747,11 @@ function createControlMat(index) {
   });
   specProbElem.children[1].children[1].step = 0.01;
   menu.appendChild(specProbElem);
+
+  let specColorElem = createControlColor("Specular Color", mat.specularColor, true, val => {
+    mat.specularColor = val;
+  });
+  menu.appendChild(specColorElem);
 
   return elem;
 }

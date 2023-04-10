@@ -65,6 +65,7 @@ struct Mat {
   float emissionStrength;
   float smoothness;
   float specProb;
+  vec3 specularColor;
 };
 
 uniform int numObs;
@@ -275,7 +276,7 @@ vec3 traceRay(Ray ray) {
     
     vec3 emittedLight = mat.emissionColor / 255.0 * mat.emissionStrength;
     incomingLight += emittedLight * rayColor;
-    rayColor *= mix(mat.color / 255.0, vec3(1.0, 1.0, 1.0), float(isSpecularBounce)); //TODO: change the constant to a material property: "specularColor"
+    rayColor *= mix(mat.color / 255.0, mat.specularColor / 255.0, float(isSpecularBounce));
   }
 
   return incomingLight;

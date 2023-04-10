@@ -292,17 +292,15 @@ void main() {
   vec3 camUp = normalize(rotate(vec3(0.0, 1.0, 0.0), radians(cameraRot.y), radians(cameraRot.x), 0.0));
 
 
-  vec2 uv = gl_FragCoord.xy / resolution;
+  vec2 uv = gl_FragCoord.xy / resolution - 0.5;
   vec2 aspectRatio = vec2(resolution.x / resolution.y, 1.0);
-  uv -= 0.5;
 
-  float screenHeight = focusDist * tan(radians(fov) / 2.0);
+  float screenHeight = focusDist * tan(radians(fov) / 2.0) * 2.0;
   float screenWidth = screenHeight * aspectRatio.x;
   vec3 bottomLeftLoc = vec3(-screenWidth / 2.0, -screenHeight / 2.0, focusDist);
 
   vec3 screenPosLoc = bottomLeftLoc + vec3(vec2(screenWidth, screenHeight) * (uv / 2.0 + 0.5), 0.0);
-  screenPosLoc = vec3(uv, 1.0) * vec3(screenWidth, screenHeight, focusDist);
-  vec3 screenPos = cameraPos + camRight * screenPosLoc.x + camUp * screenPosLoc.y + camForward * screenPosLoc.z;
+  vec3 screenPos = cameraPos + rotate(screenPosLoc, radians(cameraRot.y), radians(cameraRot.x), 0.0);
 
 
   vec3 rayCol = vec3(0.0);
@@ -312,7 +310,7 @@ void main() {
     ray.pos = cameraPos + camRight * defocusJitter.x + camUp * defocusJitter.y;
     vec2 jitter = randPointInCircle() * divergeStrength / resolution.y;
     vec3 jitteredScreenPos = screenPos + camRight * jitter.x + camUp * jitter.y;
-    ray.dir = normalize(jitteredScreenPos - cameraPos);
+    ray.dir = normalize(jitteredScreenPos - ray.pos);
 
     rayCol += traceRay(ray);
   }

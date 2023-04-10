@@ -12,6 +12,14 @@ let sizeDivisions = 1;
 let types = ["sphere", "tri", "quad"];
 
 const obs = [
+ /* { //Focus plane
+    type: 2, //Quad
+    pos: new THREE.Vector3(0, 0, 0),
+    dims: new THREE.Vector3(1000, 1000, 0),
+    dims2: new THREE.Vector3(0, 0, 0),
+    mat: 0,
+    exists: true,
+  },*/
   { 
     type: 2, //Quad
     pos: new THREE.Vector3(0, 0, boxSize / 2),
@@ -334,6 +342,16 @@ function render() {
   }
 
 
+/*
+  let fp = obs[0];
+  let pos = rotateVector({x: 0, y: 0, z: uniforms.focusDist.value}, uniforms.cameraRot.value.y, uniforms.cameraRot.value.x, 0);
+  fp.pos.x = uniforms.cameraPos.value.x + pos.x;
+  fp.pos.y = uniforms.cameraPos.value.y + pos.y;
+  fp.pos.z = uniforms.cameraPos.value.z + pos.z;
+  fp.dims2.x = uniforms.cameraRot.value.x;
+  fp.dims2.y = uniforms.cameraRot.value.y;*/
+
+
 
   if (uniforms.renderedFrames.value == 0) {
     screenMat.visible = false;
@@ -343,7 +361,6 @@ function render() {
 
   uniforms.lastFrame.value = rt1.texture;
   uniforms.renderedFrames.value++;
-
 
 
   renderer.setRenderTarget(rt2);
@@ -420,6 +437,48 @@ function matMultVec(matrix, vector) {
   }
   
   return {x: result[0], y: result[1], z: result[2]};
+}
+// Helper function to multiply two matrices
+function matMultMat(a, b) {
+  const result = [];
+  for (let i = 0; i < 3; i++) {
+    result[i] = [];
+    for (let j = 0; j < 3; j++) {
+      let sum = 0;
+      for (let k = 0; k < 3; k++) {
+        sum += a[i][k] * b[k][j];
+      }
+      result[i][j] = sum;
+    }
+  }
+  return result;
+}
+//rotates a vector
+function rotateVector(vector, pitch, yaw, roll) {
+  const pitchRad = pitch * Math.PI / 180;
+  const yawRad = yaw * Math.PI / 180;
+  const rollRad = roll * Math.PI / 180;
+
+  const pitchMat = [
+    [1, 0, 0],
+    [0, Math.cos(pitchRad), -Math.sin(pitchRad)],
+    [0, Math.sin(pitchRad), Math.cos(pitchRad)]
+  ];
+  const yawMat = [
+    [Math.cos(yawRad), 0, Math.sin(yawRad)],
+    [0, 1, 0],
+    [-Math.sin(yawRad), 0, Math.cos(yawRad)]
+  ];
+  const rollMat = [
+    [Math.cos(rollRad), -Math.sin(rollRad), 0],
+    [Math.sin(rollRad), Math.cos(rollRad), 0],
+    [0, 0, 1]
+  ];
+
+  const rotationMat = matMultMat(rollMat, matMultMat(yawMat, pitchMat));
+  const rotatedVector = matMultVec(rotationMat, vector);
+  
+  return rotatedVector;
 }
 
 

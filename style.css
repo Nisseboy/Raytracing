@@ -32,6 +32,9 @@ html, body {
 .controls-submenu {
   height: 0;
   overflow: hidden;
+
+  padding-left: calc(var(--depth) * 0.5rem);
+  border-left: 2px dotted white;
 }
 .controls-submenu.open {
   height: auto;

@@ -7,7 +7,7 @@ const rotSpeed = 2;
 
 const boxSize = 45;
 
-let sizeDivisions = 1;
+let sizeDivisions = 2;
 
 let types = ["sphere", "tri", "quad"];
 
@@ -22,6 +22,7 @@ const obs = [
   },*/
   { 
     type: 2, //Quad
+    name: "Back Wall",
     pos: new THREE.Vector3(0, 0, boxSize / 2),
     dims: new THREE.Vector3(boxSize, boxSize, 0),
     dims2: new THREE.Vector3(0, 0, 0),
@@ -30,6 +31,7 @@ const obs = [
   },
   { 
     type: 2, //Quad
+    name: "Front Wall",
     pos: new THREE.Vector3(0, 0, -boxSize / 2),
     dims: new THREE.Vector3(boxSize, boxSize, 0),
     dims2: new THREE.Vector3(180, 0, 0),
@@ -38,6 +40,7 @@ const obs = [
   },
   { 
     type: 2, //Quad
+    name: "Left Wall",
     pos: new THREE.Vector3(-boxSize / 2, 0, 0),
     dims: new THREE.Vector3(boxSize, boxSize, 0),
     dims2: new THREE.Vector3(-90, 0, 0),
@@ -46,6 +49,7 @@ const obs = [
   },
   { 
     type: 2, //Quad
+    name: "Right Wall",
     pos: new THREE.Vector3(boxSize / 2, 0, 0),
     dims: new THREE.Vector3(boxSize, boxSize, 0),
     dims2: new THREE.Vector3(90, 0, 0),
@@ -54,6 +58,7 @@ const obs = [
   },
   { 
     type: 2, //Quad
+    name: "Floor",
     pos: new THREE.Vector3(0, -boxSize / 2, 0),
     dims: new THREE.Vector3(boxSize, boxSize, 0),
     dims2: new THREE.Vector3(0, 90, 0),
@@ -62,6 +67,7 @@ const obs = [
   },
   { 
     type: 2, //Quad
+    name: "Roof",
     pos: new THREE.Vector3(0, boxSize / 2, 0),
     dims: new THREE.Vector3(boxSize, boxSize, 0),
     dims2: new THREE.Vector3(0, -90, 0),
@@ -69,8 +75,9 @@ const obs = [
     exists: true,
   },
 
-  { //Lamp
+  {
     type: 2, //Quad
+    name: "Lamp",
     pos: new THREE.Vector3(0, boxSize / 2 - 0.001 , 0),
     dims: new THREE.Vector3(boxSize / 3, boxSize / 3, 0),
     dims2: new THREE.Vector3(0, -90, 0),
@@ -78,24 +85,27 @@ const obs = [
     exists: true,
   },
   
-  { //Sphere 1 
+  {
     type: 0, //Sphere
-    pos: new THREE.Vector3(0, 0, 0),
+    name: "Left Sphere",
+    pos: new THREE.Vector3(-12, 0, 0),
     dims: new THREE.Vector3(5, 0, 0),
     dims2: new THREE.Vector3(0, 0, 0),
     mat: 7,
     exists: true,
   },
-  { //Sphere 1 
+  {
     type: 0, //Sphere
-    pos: new THREE.Vector3(-12, 0, 0),
+    name: "Middle Sphere",
+    pos: new THREE.Vector3(0, 0, 0),
     dims: new THREE.Vector3(5, 0, 0),
     dims2: new THREE.Vector3(0, 0, 0),
     mat: 8,
     exists: true,
   },
-  { //Sphere 1 
+  {
     type: 0, //Sphere
+    name: "Right Sphere",
     pos: new THREE.Vector3(12, 0, 0),
     dims: new THREE.Vector3(5, 0, 0),
     dims2: new THREE.Vector3(0, 0, 0),
@@ -104,6 +114,7 @@ const obs = [
   },
   {
     type: 0, //Sphere
+    name: "Glowing Sphere",
     pos: new THREE.Vector3(6, -15, 0),
     dims: new THREE.Vector3(3, 0, 0),
     dims2: new THREE.Vector3(0, 0, 0),
@@ -174,7 +185,7 @@ const mats = [
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 1,
-    specProb: 0.5,
+    specProb: 1,
     specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Sphere 1
@@ -182,7 +193,7 @@ const mats = [
     emissionColor: new THREE.Vector3(0, 0, 0),
     emissionStrength: 0,
     smoothness: 1,
-    specProb: 1,
+    specProb: 0.5,
     specularColor: new THREE.Vector3(255, 255, 255),
   },
   { // Sphere 1
@@ -208,7 +219,7 @@ const raytracingMat = await new Material("raytracing", {
   time: { value: 0 },
   resolution: { value: new THREE.Vector2() },
 
-  cameraPos: { value: new THREE.Vector3(0, 0, -45) },
+  cameraPos: { value: new THREE.Vector3(0, 0, -55) },
   cameraRot: { value: new THREE.Vector2(0, 0) },
 
   fov: {value: 90.0},
@@ -514,10 +525,7 @@ function hexToVec3(hex) {
 
 
 //The controls panel
-let controlsElem = document.getElementsByClassName("controls-submenu")[0];
-document.getElementsByClassName("controls-toggle")[0].addEventListener("click", e => {
-  controlsElem.classList.toggle("open");
-});
+let controlsElem = document.getElementsByClassName("controls")[0];
 
 function createControlShell(name, type, hasValue, value = 0) {
   let elem = document.createElement("div");
@@ -557,12 +565,13 @@ function createControlShell(name, type, hasValue, value = 0) {
     inputElem
   };
 }
-function createControlRange(name, value, min, max, clearScreen, callback = ()=>{}) {
+function createControlRange(name, value, min, max, step, clearScreen, callback = ()=>{}) {
   let shell = createControlShell(name, "range", true, value);
 
   shell.inputElem.value = value;
   shell.inputElem.min = min;
   shell.inputElem.max = max;
+  shell.inputElem.step = step;
 
   shell.inputElem.addEventListener("input", e => {
     shell.valueElem.innerText = shell.inputElem.value;
@@ -616,7 +625,7 @@ function createControlColor(name, value, clearScreen, callback = () => {}) {
 
   return shell.elem;
 }
-function createControlVector(name, value, bounds, clearScreen, callback = () => {}) {
+function createControlVector(name, value, min, max, step, clearScreen, callback = () => {}) {
   let shell = createControlShell(name, "vector", false);
   shell.inputHolderElem.replaceChildren();
   
@@ -629,12 +638,11 @@ function createControlVector(name, value, bounds, clearScreen, callback = () => 
 
   for (let i = 0; i < dims; i++) {
     let dim = ["x","y","z"][i];
-    let range = createControlRange(dim, value[dim], -bounds, bounds, clearScreen, (val)=>{
+    let range = createControlRange(dim, value[dim], min, max, step, clearScreen, (val)=>{
       value[dim] = parseFloat(val);
       callback(value);
     });
-    
-    range.children[1].children[1].step = 0.1;
+  
 
     submenu.appendChild(range);
   }
@@ -658,45 +666,44 @@ function createControlObject(index) {
   let type = types[ob.type];
 
   let elem = document.createElement("div");
-  let menu = createControlMenu(index + " - " + type, false);
+  let menu = createControlMenu(`${index}: ${ob.name} - ${type}`, false);
   elem.appendChild(menu[0]);
   elem.appendChild(menu[1]);
   menu = menu[1];
 
-  let posElem = createControlVector("Pos", ob.pos, 50, true);
+  let posElem = createControlVector("Pos", ob.pos, -50, 50, 1, true);
   menu.appendChild(posElem);
 
   if (type == "sphere") {
 
-    let radiusElem = createControlRange("Radius", ob.dims.x, 0, 20, true, (val) => {
+    let radiusElem = createControlRange("Radius", ob.dims.x, 0, 20, 0.1, true, (val) => {
       ob.dims.x = val;
     });
-    radiusElem.children[1].children[1].step = "0.1";
     menu.appendChild(radiusElem);
 
   } else if (type == "tri") {
 
-    let posElem2 = createControlVector("Pos", ob.dims, 50, true);
+    let posElem2 = createControlVector("Pos", ob.dims, -50, 50, 1, true);
     menu.appendChild(posElem2);
-    let posElem3 = createControlVector("Pos", ob.dims2, 50, true);
+    let posElem3 = createControlVector("Pos", ob.dims2, -50, 50, 1, true);
     menu.appendChild(posElem3);
 
   } else if (type == "quad") {
 
-    let dimsElem = createControlVector("Dimensions", new THREE.Vector2(ob.dims.x, ob.dims.y), 50, true, (val) => {
+    let dimsElem = createControlVector("Dimensions", new THREE.Vector2(ob.dims.x, ob.dims.y), -50, 50, 1, true, (val) => {
       ob.dims.x = val.x;
       ob.dims.y = val.y;
     });
     menu.appendChild(dimsElem);
 
-    let rotElem = createControlVector("Rotation", ob.dims2, 360, true, (val) => {
+    let rotElem = createControlVector("Rotation", ob.dims2, -180, 180, 1, true, (val) => {
 
     });
     menu.appendChild(rotElem);
 
   }
 
-  let matElem = createControlRange("Material", ob.mat, 0, mats.length, true, val => {
+  let matElem = createControlRange("Material", ob.mat, 0, mats.length, 1, true, val => {
     ob.mat = val;
   });
   menu.appendChild(matElem);
@@ -730,22 +737,19 @@ function createControlMat(index) {
   });
   menu.appendChild(emColorElem);
 
-  let emStrengthElem = createControlRange("Emission Strength", mat.emissionStrength, 0, 10, true, val => {
+  let emStrengthElem = createControlRange("Emission Strength", mat.emissionStrength, 0, 10, 0.01, true, val => {
     mat.emissionStrength = val;
   });
-  emStrengthElem.children[1].children[1].step = 0.01;
   menu.appendChild(emStrengthElem);
 
-  let smoothnessElem = createControlRange("Smoothness", mat.smoothness, 0, 1, true, val => {
+  let smoothnessElem = createControlRange("Smoothness", mat.smoothness, 0, 1, 0.01, true, val => {
     mat.smoothness = val;
   });
-  smoothnessElem.children[1].children[1].step = 0.01;
   menu.appendChild(smoothnessElem);
 
-  let specProbElem = createControlRange("Specular Prob.", mat.specProb, 0, 1, true, val => {
+  let specProbElem = createControlRange("Specular Prob.", mat.specProb, 0, 1, 0.01, true, val => {
     mat.specProb = val;
   });
-  specProbElem.children[1].children[1].step = 0.01;
   menu.appendChild(specProbElem);
 
   let specColorElem = createControlColor("Specular Color", mat.specularColor, true, val => {
@@ -755,8 +759,6 @@ function createControlMat(index) {
 
   return elem;
 }
-
-
 
 function createControlMenu(name, open) {
   let toggleElem = document.createElement("button");
@@ -773,81 +775,229 @@ function createControlMenu(name, open) {
   return [toggleElem, elem];
 }
 
-controlsElem.appendChild(createControlRange("Bounce Limit", uniforms.bounceLimit.value, 1, 20, true, (value)=>{
-  uniforms.bounceLimit.value = value;
-}));
-controlsElem.appendChild(createControlRange("Rays/Pixel", uniforms.raysPerPixel.value, 1, 100, true, (value)=>{
-  uniforms.raysPerPixel.value = value;
-}));
-controlsElem.appendChild(createControlRange("Size Divs", sizeDivisions, 1, 10, true, (value)=>{
-  sizeDivisions = value;
-  resize();
-}));
 
+function createControls(controls, depth = 0) {
+  let elems = [];
 
-let camMenu = createControlMenu("Camera", true);
-controlsElem.appendChild(camMenu[0]);
-controlsElem.appendChild(camMenu[1]);
-camMenu = camMenu[1];
-camMenu.appendChild(createControlVector("Position", uniforms.cameraPos.value, 100, true, (value)=>{
-  
-}));
-camMenu.appendChild(createControlVector("Rotation", uniforms.cameraRot.value, 360, true, (value)=>{
-  
-}));
-camMenu.appendChild(createControlRange("FOV", uniforms.fov.value, 10, 179, true, (value)=>{
-  uniforms.fov.value = value;
-}));
-camMenu.appendChild(createControlRange("Divergence", uniforms.divergeStrength.value, 0, 100, true, (value)=>{
-  uniforms.divergeStrength.value = value;
-}));
-camMenu.appendChild(createControlRange("Defocus", uniforms.defocusStrength.value, 0, 200, true, (value)=>{
-  uniforms.defocusStrength.value = value;
-}));
-camMenu.appendChild(createControlRange("Focus Plane", uniforms.focusDist.value, 1, 100, true, (value)=>{
-  uniforms.focusDist.value = value;
-}));
+  for (let i = 0; i < controls.length; i++) {
+    let control = controls[i];
+    let elem;
+    switch (control.type) {
+      case "menu":
+        elem = createControlMenu(control.name, control.open);
+        elem[1].style.setProperty("--depth", depth + 1);
 
+        let subControls = createControls(control.controls, depth + 1);
+        for (let i in subControls) {
+          let subControl = subControls[i];
+          elem[1].appendChild(subControl);
+        }
 
-let skyMenu = createControlMenu("Skybox", false);
-controlsElem.appendChild(skyMenu[0]);
-controlsElem.appendChild(skyMenu[1]);
-skyMenu = skyMenu[1];
-skyMenu.appendChild(createControlCheck("Skybox", uniforms.hasSky.value, true, (value)=>{
-  uniforms.hasSky.value = value;
-}));
-skyMenu.appendChild(createControlColor("Col Horizon", uniforms.skyColorHorizon.value, true, (value)=>{
-  uniforms.skyColorHorizon.value = value;
-}));
-skyMenu.appendChild(createControlColor("Col Zenith", uniforms.skyColorZenith.value, true, (value)=>{
-  uniforms.skyColorZenith.value = value;
-}));
-skyMenu.appendChild(createControlColor("Col Ground", uniforms.groundColor.value, true, (value)=>{
-  uniforms.groundColor.value = value;
-}));
-skyMenu.appendChild(createControlVector("Sun Dir", uniforms.sunLightDirection.value, 10, true, (value)=>{
-  
-}));
-skyMenu.appendChild(createControlRange("Sun Focus", uniforms.sunFocus.value, 0, 500, true, (value)=>{
-  uniforms.sunFocus.value = value;
-}));
-skyMenu.appendChild(createControlRange("Sun Intensity", uniforms.sunIntensity.value, 0, 100, true, (value)=>{
-  uniforms.sunIntensity.value = value;
-}));
+        elems.push(elem[0]);
+        elems.push(elem[1]);
+        break;
 
+      case "range":
+        elem = createControlRange(control.name, control.value, control.range[0], control.range[1], control.range[2], true, control.callback);
+        elems.push(elem);
+        break;
 
-let obMenu = createControlMenu("Objects", false);
-controlsElem.appendChild(obMenu[0]);
-controlsElem.appendChild(obMenu[1]);
-obMenu = obMenu[1];
-for (let i = 0; i < obs.length; i++) {
-  obMenu.appendChild(createControlObject(i));
+      case "vector":
+        elem = createControlVector(control.name, control.value, control.range[0], control.range[1], control.range[2], true, control.callback);
+        elems.push(elem);
+        break;
+
+      case "check":
+        elem = createControlCheck(control.name, control.value, true, control.callback);
+        elems.push(elem);
+        break;
+
+      case "color":
+        elem = createControlColor(control.name, control.value, true, control.callback);
+        elems.push(elem);
+        break;
+
+      case "object":
+        elem = createControlObject(control.i);
+        elems.push(elem);
+        break;
+
+      case "material":
+        elem = createControlMat(control.i);
+        elems.push(elem);
+        break;
+    }
+  }
+
+  if (depth == 0) {
+    for (let i in elems) {
+      let elem = elems[i];
+      controlsElem.appendChild(elem);
+    }
+  } else {
+    return elems;
+  }
 }
 
-let matMenu = createControlMenu("Materials", false);
-controlsElem.appendChild(matMenu[0]);
-controlsElem.appendChild(matMenu[1]);
-matMenu = matMenu[1];
-for (let i = 0; i < mats.length; i++) {
-  matMenu.appendChild(createControlMat(i));
-}
+let controls = [
+  {
+    type: "menu",
+    name: "controls",
+    open: true,
+    controls: [
+      {
+        type: "range",
+        name: "Bounce Limit",
+        value: uniforms.bounceLimit.value,
+        range: [1, 20, 1],
+        callback: val=>{uniforms.bounceLimit.value = val},
+      },
+      {
+        type: "range",
+        name: "Rays/Pixel/Frame",
+        value: uniforms.raysPerPixel.value,
+        range: [1, 100, 1],
+        callback: val=>{uniforms.raysPerPixel.value = val},
+      },
+      {
+        type: "range",
+        name: "Size Divisions",
+        value: sizeDivisions,
+        range: [1, 10, 1],
+        callback: val=>{sizeDivisions = val; resize()},
+      },
+      {
+        type: "menu",
+        name: "camera",
+        open: true,
+        controls: [
+          {
+            type: "vector",
+            name: "Position",
+            value: uniforms.cameraPos.value,
+            range: [-100, 100, 1],
+            callback: () => {},
+          },
+          {
+            type: "vector",
+            name: "Rotation",
+            value: uniforms.cameraRot.value,
+            range: [-180, 180, 1],
+            callback: () => {},
+          },
+          {
+            type: "range",
+            name: "FOV",
+            value: uniforms.fov.value,
+            range: [10, 179, 1],
+            callback: val=>{uniforms.fov.value = val;},
+          },
+          {
+            type: "range",
+            name: "Divergence",
+            value: uniforms.divergeStrength.value,
+            range: [0, 100, 1],
+            callback: val=>{uniforms.divergeStrength.value = val;},
+          },
+          {
+            type: "range",
+            name: "Defocus",
+            value: uniforms.defocusStrength.value,
+            range: [0, 200, 1],
+            callback: val=>{uniforms.defocusStrength.value = val;},
+          },
+          {
+            type: "range",
+            name: "Focus Plane",
+            value: uniforms.focusDist.value,
+            range: [1, 100, 1],
+            callback: val=>{uniforms.focusDist.value = val;},
+          },
+        ],
+      },
+      {
+        type: "menu",
+        name: "skybox",
+        open: false,
+        controls: [
+          {
+            type: "check",
+            name: "Has Sky",
+            value: uniforms.hasSky.value,
+            callback: val=>{uniforms.hasSky.value = val;},
+          },
+          {
+            type: "color",
+            name: "Color Horizon",
+            value: uniforms.skyColorHorizon.value,
+            callback: val=>{uniforms.skyColorHorizon.value = val;},
+          },
+          {
+            type: "color",
+            name: "Color Zenith",
+            value: uniforms.skyColorZenith.value,
+            callback: val=>{uniforms.skyColorZenith.value = val;},
+          },
+          {
+            type: "color",
+            name: "Color Ground",
+            value: uniforms.groundColor.value,
+            callback: val=>{uniforms.groundColor.value = val;},
+          },
+          {
+            type: "vector",
+            name: "Sun Direction",
+            value: uniforms.sunLightDirection.value,
+            range: [-5, 5, 0.01],
+            callback: () => {},
+          },
+          {
+            type: "range",
+            name: "Sun Focus",
+            value: uniforms.sunFocus.value,
+            range: [0, 1000, 1],
+            callback: val=>{uniforms.sunFocus.value = val;},
+          },
+          {
+            type: "range",
+            name: "Sun Intensity",
+            value: uniforms.sunIntensity.value,
+            range: [0, 100, 1],
+            callback: val=>{uniforms.sunIntensity.value = val;},
+          },
+        ],
+      },
+      {
+        type: "menu",
+        name: "objects",
+        open: false,
+        controls: (function (){
+          let controls = [];
+          for (let i = 0; i < obs.length; i++) {
+            controls.push({
+              type: "object",
+              i: i,
+            });
+          }
+          return controls;
+        })(),
+      },
+      {
+        type: "menu",
+        name: "materials",
+        open: false,
+        controls: (function (){
+          let controls = [];
+          for (let i = 0; i < mats.length; i++) {
+            controls.push({
+              type: "material",
+              i: i,
+            });
+          }
+          return controls;
+        })(),
+      },
+    ],
+  }
+];
+createControls(controls);

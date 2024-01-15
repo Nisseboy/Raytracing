@@ -277,6 +277,12 @@ vec3 traceRay(Ray ray) {
     vec3 emittedLight = mat.emissionColor / 255.0 * mat.emissionStrength;
     incomingLight += emittedLight * rayColor;
     rayColor *= mix(mat.color / 255.0, mat.specularColor / 255.0, float(isSpecularBounce));
+
+    float p = max(rayColor.r, max(rayColor.g, rayColor.b));
+    if (rand() >= p) {
+      break;
+    }
+    rayColor *= 1.0f / p; 
   }
 
   return incomingLight;
@@ -309,6 +315,7 @@ void main() {
     Ray ray;
     vec2 defocusJitter = randPointInCircle() * defocusStrength / resolution.y;
     ray.pos = cameraPos + camRight * defocusJitter.x + camUp * defocusJitter.y;
+    
     vec2 jitter = randPointInCircle() * divergeStrength / resolution.y;
     vec3 jitteredScreenPos = screenPos + camRight * jitter.x + camUp * jitter.y;
     ray.dir = normalize(jitteredScreenPos - ray.pos);

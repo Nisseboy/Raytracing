@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Material from './material';
+import Material from './material.js';
 
 let pressed = {};
 const moveSpeed = 1;

@@ -288,6 +288,14 @@ vec3 traceRay(Ray ray) {
   return incomingLight;
 }
 
+vec3 aces(vec3 x) {
+  const float a = 2.51;
+  const float b = 0.03;
+  const float c = 2.43;
+  const float d = 0.59;
+  const float e = 0.14;
+  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
+}
 
 void main() {
   randState = uint((gl_FragCoord.y * resolution.x + gl_FragCoord.x) / resolution.x / resolution.y * 4294967295.0);
@@ -324,6 +332,7 @@ void main() {
   }
   rayCol /= float(raysPerPixel);
 
+  //rayCol = aces(rayCol);
 
   if (renderedFrames > 2) {
     float weight = 1.0 / (float(renderedFrames) + 1.0);

@@ -208,7 +208,7 @@ import Material from './material.js';
     {
       color: new THREE.Vector3(0, 200, 200),
       emissionColor: new THREE.Vector3(0, 200, 200),
-      emissionStrength: 10,
+      emissionStrength: 5,
       smoothness: 0.5,
       specProb: 0.02,
       specularColor: new THREE.Vector3(255, 255, 255),
@@ -263,8 +263,8 @@ import Material from './material.js';
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
   //Create the rendertargets needed for progressive rendering.
-  let rt1 = new THREE.WebGLRenderTarget(512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat });
-  let rt2 = new THREE.WebGLRenderTarget(512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat });
+  let rt1 = new THREE.WebGLRenderTarget(512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat, type: THREE.FloatType });
+  let rt2 = new THREE.WebGLRenderTarget(512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat, type: THREE.FloatType });
 
   // Set clock
   const clock = new THREE.Clock();
